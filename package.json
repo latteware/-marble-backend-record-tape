@@ -1,5 +1,5 @@
 {
-  "name": "@marble-seeds/backend-module-template",
+  "name": "@marble-seeds/record-tape",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -26,5 +26,5 @@
   "pre-commit": [
     "lint",
     "test"
-  ]  
+  ]
 }

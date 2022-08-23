@@ -1,24 +1,12 @@
-## Marble seeds [Module name]
+## Marble seeds Record Tape
 
 ## Install with
 
 ```
-npm i @marble-seeds/[Module name]
+npm i @marble-seeds/@marble-seeds/record-tape
 ```
 
 ## Docs
 
-After clone do
 
-```
-git reset $(git commit-tree HEAD^{tree} -m "A new start")
-```
-
-To get a new history, then point to the correct package
-
-```
-git remote set-url origin [Git repo]
-```
-
-Then remove this part and write the docs of your package
 
