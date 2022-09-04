@@ -22,14 +22,16 @@ const RecordTape = class RecordTape {
     return data
   }
 
-  startRecording () {
+  startRecording () {}
 
-  }
+  replayRecording () {}
 }
 
 RecordTape.testTape = (suiteName, tape, testFn) => {
   describe('Sample', function () {
-    for (const record of tape) {
+    const tapeData = tape.loadSync()
+
+    for (const record of tapeData.log) {
       it(`Test input ${JSON.stringify(record.input)}, should ${record.error ? 'fail' : 'give output'}`, async function () {
         let result, error
         try {
