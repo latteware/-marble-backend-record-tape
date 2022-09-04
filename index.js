@@ -1,9 +1,57 @@
-/* global describe, it, expect */
 const fs = require('fs')
 
+const testTape = require('./utils/test-tape')
+
 const RecordTape = class RecordTape {
-  constructor (config) {
+  constructor (config = {}) {
     this._path = `${config.path}.json`
+    this._log = []
+    this._boundaries = {}
+  }
+
+  _formatData () {
+    return {
+      log: this._log,
+      boundaries: this._boundaries
+    }
+  }
+
+  // Data functions
+  getData () {
+    return this._formatData()
+  }
+
+  addLogItem (item) {
+    if (
+      (item.input && item.output) ||
+      (item.input && item.error)
+    ) {
+      return this._log.push(item)
+    }
+  }
+
+  addBoundaryData (boundaryName, callData) {
+    const boundaries = this._boundaries
+    if (!boundaries[boundaryName]) {
+      boundaries[boundaryName] = []
+    }
+
+    // ToDo: implement clean up of repeated inputs
+    const boundary = boundaries[boundaryName]
+    boundary.unshift(callData)
+  }
+
+  // Load save functions
+  async load () {
+    const readFile = fs.promises.readFile
+    const content = await readFile(this._path, 'utf8')
+
+    const data = JSON.parse(content)
+
+    this._log = data.log
+    this._boundaries = data.boundaries
+
+    return data
   }
 
   loadSync () {
@@ -11,47 +59,32 @@ const RecordTape = class RecordTape {
 
     const data = JSON.parse(content)
 
+    this._log = data.log
+    this._boundaries = data.boundaries
+
     return data
   }
 
-  saveSync (data) {
-    const content = JSON.stringify(data)
+  async save () {
+    const writeFile = fs.promises.writeFile
+    const data = this._formatData()
+    const content = JSON.stringify(data, null, 2)
+
+    await writeFile(this._path, content, 'utf8')
+
+    return data
+  }
+
+  saveSync () {
+    const data = this._formatData()
+    const content = JSON.stringify(data, null, 2)
 
     fs.writeFileSync(this._path, content, 'utf8')
 
     return data
   }
-
-  startRecording () {}
-
-  replayRecording () {}
 }
 
-RecordTape.testTape = (suiteName, tape, testFn) => {
-  describe('Sample', function () {
-    const tapeData = tape.loadSync()
-
-    for (const record of tapeData.log) {
-      it(`Test input ${JSON.stringify(record.input)}, should ${record.error ? 'fail' : 'give output'}`, async function () {
-        let result, error
-        try {
-          result = await testFn(record.input)
-        } catch (e) {
-          error = e
-        }
-
-        if (record.output) {
-          expect(error).to.equal(undefined)
-          expect(record.output).to.deep.equal(result)
-        }
-
-        if (record.error) {
-          expect(result).to.equal(undefined)
-          expect(record.error).to.deep.equal(error.message)
-        }
-      })
-    }
-  })
-}
+RecordTape.testTape = testTape
 
 module.exports = RecordTape
