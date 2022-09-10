@@ -5,12 +5,12 @@ describe('Boundaries items', function () {
   it('Add successful log item', async function () {
     const tape = new RecordTape()
 
-    tape.addBoundaryData('add', {
+    tape.addBoundaryItem('add', {
       input: { value: 4, increment: 1 },
       output: 5
     })
 
-    tape.addBoundaryData('add', {
+    tape.addBoundaryItem('add', {
       input: { value: 4, increment: 2 },
       output: 6
     })

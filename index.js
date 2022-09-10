@@ -7,6 +7,7 @@ const RecordTape = class RecordTape {
     this._path = `${config.path}.json`
     this._log = []
     this._boundaries = {}
+    this._mode = 'record'
   }
 
   _formatData () {
@@ -21,7 +22,15 @@ const RecordTape = class RecordTape {
     return this._formatData()
   }
 
+  setMode (mode) {
+    this._mode = mode
+  }
+
   addLogItem (item) {
+    if (this._mode === 'replay') {
+      return
+    }
+
     if (
       (item.input && item.output) ||
       (item.input && item.error)
@@ -30,7 +39,11 @@ const RecordTape = class RecordTape {
     }
   }
 
-  addBoundaryData (boundaryName, callData) {
+  addBoundariesData (boundaries) {
+    this._boundaries = boundaries
+  }
+
+  addBoundaryItem (boundaryName, callData) {
     const boundaries = this._boundaries
     if (!boundaries[boundaryName]) {
       boundaries[boundaryName] = []
