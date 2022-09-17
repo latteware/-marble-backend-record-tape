@@ -22,6 +22,14 @@ const RecordTape = class RecordTape {
     return this._formatData()
   }
 
+  getBoundaries () {
+    return this._boundaries
+  }
+
+  getMode () {
+    return this._mode
+  }
+
   setMode (mode) {
     this._mode = mode
   }
