@@ -65,7 +65,17 @@ const RecordTape = class RecordTape {
   // Load save functions
   async load () {
     const readFile = fs.promises.readFile
-    const content = await readFile(this._path, 'utf8')
+
+    let content, err
+    try {
+      content = await readFile(this._path, 'utf8')
+    } catch (e) {
+      err = e
+    }
+
+    if (err) {
+      return
+    }
 
     const data = JSON.parse(content)
 
@@ -76,6 +86,10 @@ const RecordTape = class RecordTape {
   }
 
   loadSync () {
+    if (!fs.existsSync(this._path)) {
+      return
+    }
+
     const content = fs.readFileSync(this._path, 'utf8')
 
     const data = JSON.parse(content)
