@@ -87,6 +87,16 @@ const RecordTape = class RecordTape {
     task.setBoundariesTapes(this._boundaries)
   }
 
+  replay ({ name, task }) {
+    // set task on replay mode with correct boundaries
+    task.setMode('replay')
+    task.setBoundariesTapes(this._boundaries)
+
+    testTape(name, this, async (argv) => {
+      return await task.run(argv)
+    })
+  }
+
   // Load save functions
   async load () {
     const readFile = fs.promises.readFile
@@ -146,7 +156,5 @@ const RecordTape = class RecordTape {
     return data
   }
 }
-
-RecordTape.testTape = testTape
 
 module.exports = RecordTape
