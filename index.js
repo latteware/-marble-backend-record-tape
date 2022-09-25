@@ -4,9 +4,9 @@ const testTape = require('./utils/test-tape')
 
 const RecordTape = class RecordTape {
   constructor (config = {}) {
-    this._path = `${config.path}.json`
-    this._log = []
-    this._boundaries = {}
+    this._path = config.path ? `${config.path}.json` : null
+    this._log = config.log || []
+    this._boundaries = config.boundaries || {}
     this._mode = 'record'
   }
 
@@ -20,6 +20,10 @@ const RecordTape = class RecordTape {
   // Data functions
   getData () {
     return this._formatData()
+  }
+
+  getLog () {
+    return this._log
   }
 
   getBoundaries () {
@@ -62,6 +66,27 @@ const RecordTape = class RecordTape {
     boundary.unshift(callData)
   }
 
+  recordFrom (task) {
+    // Add listner
+    task._listener = async (logItem, boundaries) => {
+      // Only update if mode is record
+      if (this.getMode() === 'record') {
+        this.addLogItem(logItem)
+        this.addBoundariesData(boundaries)
+
+        /*
+          Update save logic
+          - Should be an async update
+          - Probably marking tape as dirty and pass the save responsability to the tape owners
+        */
+        this.saveSync()
+      }
+    }
+
+    // Add boundaries tape
+    task.setBoundariesTapes(this._boundaries)
+  }
+
   // Load save functions
   async load () {
     const readFile = fs.promises.readFile
@@ -101,6 +126,7 @@ const RecordTape = class RecordTape {
   }
 
   async save () {
+    if (!this._path) { return }
     const writeFile = fs.promises.writeFile
     const data = this._formatData()
     const content = JSON.stringify(data, null, 2)
@@ -111,6 +137,7 @@ const RecordTape = class RecordTape {
   }
 
   saveSync () {
+    if (!this._path) { return }
     const data = this._formatData()
     const content = JSON.stringify(data, null, 2)
 

@@ -1,8 +1,7 @@
 /* global describe, it, expect */
 
-// This function takes a tape and build a mocha set of test
-const testTape = (suiteName, tape, testFn) => {
-  describe(`Suite: ${suiteName}`, function () {
+const testCreation = (fn, suiteName, tape, testFn) => {
+  fn(`Suite: ${suiteName}`, function () {
     const tapeData = tape.loadSync()
 
     for (const record of tapeData.log) {
@@ -26,6 +25,19 @@ const testTape = (suiteName, tape, testFn) => {
       })
     }
   })
+}
+
+// This function takes a tape and build a mocha set of test
+const testTape = (suiteName, tape, testFn) => {
+  testCreation(describe, suiteName, tape, testFn)
+}
+
+testTape.only = (suiteName, tape, testFn) => {
+  testCreation(describe.only, suiteName, tape, testFn)
+}
+
+testTape.skip = (suiteName, tape, testFn) => {
+  testCreation(describe.skip, suiteName, tape, testFn)
 }
 
 module.exports = testTape
