@@ -1,10 +1,19 @@
-/* global describe, it, expect */
-
-const testCreation = (fn, suiteName, tape, testFn) => {
+/* global describe, before, it, expect */
+const testCreation = (fn, suiteName, tape, task) => {
   fn(`Suite: ${suiteName}`, function () {
-    const tapeData = tape.loadSync()
+    let testFn
+    before(function () {
+      tape.loadSync()
 
-    for (const record of tapeData.log) {
+      task.setMode('replay')
+      task.setBoundariesTapes(tape.getBoundaries())
+
+      testFn = async (argv) => {
+        return await task.run(argv)
+      }
+    })
+
+    for (const record of tape.getLog()) {
       it(`Test input ${JSON.stringify(record.input)}, should ${record.error ? 'fail' : 'give output'}`, async function () {
         let result, error
         try {

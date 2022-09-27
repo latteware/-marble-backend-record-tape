@@ -88,13 +88,15 @@ const RecordTape = class RecordTape {
   }
 
   replay ({ name, task }) {
-    // set task on replay mode with correct boundaries
-    task.setMode('replay')
-    task.setBoundariesTapes(this._boundaries)
+    testTape(name, this, task)
+  }
 
-    testTape(name, this, async (argv) => {
-      return await task.run(argv)
-    })
+  replayOnly ({ name, task }) {
+    testTape.only(name, this, task)
+  }
+
+  replaySkip ({ name, task }) {
+    testTape.skip(name, this, task)
   }
 
   // Load save functions
